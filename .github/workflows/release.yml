@@ -8,6 +8,9 @@ on:
   release:
     types: [published]
 
+permissions:
+  contents: write
+
 env:
   package_type: module
   node_version: 16
