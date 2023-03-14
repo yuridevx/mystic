@@ -62,8 +62,6 @@ jobs:
 
   publish:
     needs:
-      - lint
-      - test
       - build
     runs-on: ubuntu-latest
     steps:
