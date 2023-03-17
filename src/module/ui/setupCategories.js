@@ -1,6 +1,6 @@
-import { afterFunction } from '../utils.js';
-import { PsiActor } from '../data/PsiActor.mjs';
-import { PsiItem } from '../data/PsiItem.mjs';
+import {afterFunction} from '../utils.js';
+import {PsiActor} from '../data/PsiActor.mjs';
+import {PsiItem} from '../data/PsiItem.mjs';
 
 export function setupCategories(hud) {
   afterFunction(hud.systemManager, 'doGetActionHandler', (result, ...args) => {
@@ -19,11 +19,17 @@ export function setupCategories(hud) {
         },
       ],
     };
+
     const psionicsCategory = {
       id: 'psionics',
       nestId: 'psionics',
       name: 'Psionics',
       subcategories: [
+        {
+          id: 'talents',
+          nestId: 'psionics_talents',
+          name: 'Talents'
+        },
         {
           id: 'psi-1',
           nestId: 'psionics_psi-1',
@@ -81,14 +87,15 @@ async function buildFurtherActions() {
   const actor = this?.token?.actor;
   if (!actor) return;
 
-  const points = PsiActor.psiPoints(actor);
-  if (!points) return;
+  const isPsi = PsiActor.isPsiActor(actor);
+  if (!isPsi) return;
 
   const limit = PsiActor.psiLimit(actor);
   if (!limit) return;
 
   const map = {
     focus_focus: [],
+    talents: [],
     'psi-1': [],
     'psi-2': [],
     'psi-3': [],
@@ -99,8 +106,15 @@ async function buildFurtherActions() {
   };
 
   for (const [key, item] of this.items) {
+    if (PsiItem.isReaction(item)) {
+      continue;
+    }
     if (PsiItem.isFocus(item)) {
       map['focus_focus'].push(item);
+      continue;
+    }
+    if (PsiItem.isTalent(item)) {
+      map['talents'].push(item);
       continue;
     }
     const castMin = PsiItem.castMin(item);

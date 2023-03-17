@@ -1,12 +1,13 @@
-import { registerSettings } from './settings.js';
-import { preloadTemplates } from './preloadTemplates.js';
-import { renderItemSheet } from './ui/renderItemSheet.mjs';
-import { preApplyDynamicEffects, rollComplete } from './workflow/workflow.mjs';
-import { combatRound, combatStart, combatTurn } from './workflow/combat.mjs';
-import { getRollData } from './data/rollData.js';
-import { preambleComplete } from './workflow/preambleComplete.mjs';
-import { setupCategories } from './ui/setupCategories.js';
-import { catchValueSet } from './utils.js';
+import {registerSettings} from './settings.js';
+import {preloadTemplates} from './preloadTemplates.js';
+import {renderItemSheet} from './ui/renderItemSheet.mjs';
+import {preApplyDynamicEffects, rollComplete} from './workflow/workflow.mjs';
+import {combatRound, combatStart, combatTurn} from './workflow/combat.mjs';
+import {getRollData} from './data/rollData.js';
+import {preambleComplete} from './workflow/preambleComplete.mjs';
+import {setupCategories} from './ui/setupCategories.js';
+import {catchValueSet} from './utils.js';
+import {summonComplete} from "./workflow/summonComplete.mjs";
 
 let isModuleEnabled = true;
 
@@ -38,4 +39,5 @@ Hooks.once('setup', async () => {
   Hooks.on('midi-qol.preambleComplete', preambleComplete);
   Hooks.on('midi-qol.preApplyDynamicEffects', preApplyDynamicEffects);
   Hooks.on('midi-qol.RollComplete', rollComplete);
+  Hooks.on("arbron.summonComplete", summonComplete);
 });

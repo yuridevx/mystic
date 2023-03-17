@@ -1,6 +1,7 @@
 export class PsiItem {
   static castMinKey = "flags.mystic.castMin";
   static isFocusKey = "flags.mystic.isFocus";
+  static isTalentKey = "flags.mystic.isTalent";
 
   static castMin(item) {
     return item?.flags?.mystic?.castMin || item?.flags?.mystic?.pointsBase || 0;
@@ -8,6 +9,18 @@ export class PsiItem {
 
   static isFocus(item) {
     return item?.flags?.mystic?.isFocus === true;
+  }
+
+  static isReaction(item) {
+    return item?.system?.activation?.type?.includes("reaction");
+  }
+
+  static isTalent(item) {
+    return item?.flags?.mystic?.isTalent === true;
+  }
+
+  static isPsiItem(item) {
+    return PsiItem.castMin(item) > 0 || PsiItem.isFocus(item) || PsiItem.isTalent(item)
   }
 
   static canScale(item) {
@@ -18,6 +31,12 @@ export class PsiItem {
         return true;
       }
     }
+
+    const formula = item?.system?.formula
+    if (formula?.includes("@psi")) {
+      return true;
+    }
+
     return false;
   }
 }

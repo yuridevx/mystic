@@ -1,14 +1,21 @@
-import { PsiItem } from '../data/PsiItem.mjs';
+import {PsiItem} from '../data/PsiItem.mjs';
 
 export function renderItemSheet(app, html, data) {
   const element = html.find('input[name="system.chatFlavor"]').parent().parent();
   element.append('<h3 class="form-header">Mystics</h3>');
   const psiOptions = `
 <div class="form-group">
-  <label>Psychic focus</label>
+  <label>Focus</label>
   <input type="checkbox"
   name="${PsiItem.isFocusKey}"
   ${PsiItem.isFocus(data.item) ? 'checked' : ''}
+  />
+</div>
+<div class="form-group">
+  <label>Talent</label>
+  <input type="checkbox"
+  name="${PsiItem.isTalentKey}"
+  ${PsiItem.isTalent(data.item) ? 'checked' : ''}
   />
 </div>
 <div class="form-group">
