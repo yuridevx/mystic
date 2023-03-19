@@ -2,6 +2,8 @@ export class PsiActor {
   static psiPointsKey = "system.resources.primary.value";
   static psiLimitKey = "system.resources.secondary.value";
   static castPsiKey = "flags.mystic.cast.psi";
+  static psiFireKey = "flags.mystic.psiFire";
+  static psiPsyKey = "flags.mystic.psiPsy";
 
   static isPsiActor(actor) {
     if (actor?.system?.resources?.primary?.max > 0) {
@@ -35,5 +37,13 @@ export class PsiActor {
       [this.castPsiKey]: psiUsed,
       [this.psiPointsKey]: newPsi
     });
+  }
+
+  static psiFire(actor) {
+    return actor?.flags?.mystic?.psiFire ?? 0;
+  }
+
+  static psiPsy(actor) {
+    return actor?.flags?.mystic?.psiPsy ?? 0;
   }
 }

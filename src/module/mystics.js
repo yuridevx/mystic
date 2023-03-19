@@ -8,6 +8,7 @@ import {preambleComplete} from './workflow/preambleComplete.mjs';
 import {setupCategories} from './ui/setupCategories.js';
 import {catchValueSet} from './utils.js';
 import {summonComplete} from "./workflow/summonComplete.mjs";
+import {psiDamage} from "./workflow/psiDamage.js";
 
 let isModuleEnabled = true;
 
@@ -40,4 +41,5 @@ Hooks.once('setup', async () => {
   Hooks.on('midi-qol.preApplyDynamicEffects', preApplyDynamicEffects);
   Hooks.on('midi-qol.RollComplete', rollComplete);
   Hooks.on("arbron.summonComplete", summonComplete);
+  Hooks.on("dnd5e.preRollDamage", psiDamage)
 });
