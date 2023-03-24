@@ -23,6 +23,12 @@ export class PsiItem {
     return PsiItem.castMin(item) > 0 || PsiItem.isFocus(item) || PsiItem.isTalent(item)
   }
 
+  static isCombatViable(item) {
+    const type = item?.system?.activation?.type
+    if (!type) return false;
+    return type === "action" || type === "bonus" || type === "special"
+  }
+
   static canScale(item) {
     const parts = item?.system?.damage?.parts;
     if (!parts) return false;

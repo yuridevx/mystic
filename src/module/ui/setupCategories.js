@@ -8,61 +8,61 @@ export function setupCategories(hud) {
   });
   afterFunction(hud.systemManager, 'doRegisterDefaultFlags', (result, ...args) => {
     const focusCategory = {
-      id: 'focus',
-      nestId: 'focus',
-      name: 'Focus',
+      id: 'talents',
+      nestId: 'talents',
+      name: 'Talents',
       subcategories: [
         {
-          id: 'focus_focus',
-          nestId: 'focus_focus',
+          id: 'focus',
+          nestId: 'focus',
           name: 'Focus',
+        },
+        {
+          id: 'talents_talents',
+          nestId: 'talents_talents',
+          name: 'Talents'
         },
       ],
     };
 
     const psionicsCategory = {
-      id: 'psionics',
-      nestId: 'psionics',
-      name: 'Psionics',
+      id: 'disciplines',
+      nestId: 'disciplines',
+      name: 'Disciplines',
       subcategories: [
         {
-          id: 'talents',
-          nestId: 'psionics_talents',
-          name: 'Talents'
-        },
-        {
           id: 'psi-1',
-          nestId: 'psionics_psi-1',
+          nestId: 'discipline_psi-1',
           name: 'Psi 1',
         },
         {
           id: 'psi-2',
-          nestId: 'psionics_psi-2',
+          nestId: 'discipline_psi-2',
           name: 'Psi 2',
         },
         {
           id: 'psi-3',
-          nestId: 'psionics_psi-3',
+          nestId: 'discipline_psi-3',
           name: 'Psi 3',
         },
         {
           id: 'psi-4',
-          nestId: 'psionics_psi-4',
+          nestId: 'discipline_psi-4',
           name: 'Psi 4',
         },
         {
           id: 'psi-5',
-          nestId: 'psionics_psi-5',
+          nestId: 'discipline_psi-5',
           name: 'Psi 5',
         },
         {
           id: 'psi-6',
-          nestId: 'psionics_psi-6',
+          nestId: 'discipline_psi-6',
           name: 'Psi 6',
         },
         {
           id: 'psi-7',
-          nestId: 'psionics_psi-7',
+          nestId: 'discipline_psi-7',
           name: 'Psi 7',
         },
       ],
@@ -93,9 +93,11 @@ async function buildFurtherActions() {
   const limit = PsiActor.psiLimit(actor);
   if (!limit) return;
 
+  const inCombat = !!game?.combat?.started;
+
   const map = {
-    focus_focus: [],
-    talents: [],
+    focus: [],
+    talents_talents: [],
     'psi-1': [],
     'psi-2': [],
     'psi-3': [],
@@ -105,20 +107,24 @@ async function buildFurtherActions() {
     'psi-7': [],
   };
 
+  const points = PsiActor.psiPoints(actor);
+
   for (const [key, item] of this.items) {
-    if (PsiItem.isReaction(item)) {
-      continue;
-    }
+    if (inCombat && !PsiItem.isCombatViable(item)) continue;
+
     if (PsiItem.isFocus(item)) {
-      map['focus_focus'].push(item);
+      map['focus'].push(item);
       continue;
     }
     if (PsiItem.isTalent(item)) {
-      map['talents'].push(item);
+      map['talents_talents'].push(item);
       continue;
     }
+
     const castMin = PsiItem.castMin(item);
     if (!castMin) continue;
+    if (points < castMin) continue;
+    if (castMin > limit) continue;
 
     map[`psi-${castMin}`].push(item);
   }

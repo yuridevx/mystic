@@ -2,9 +2,12 @@ import {PsiActor} from "../data/PsiActor.mjs";
 
 export function psiDamage(item, rollConfig) {
   if (item?.name === "Damage Over Time") {
+    // why is this here?
     return;
   }
+
   if (!item.actor) return
+
   const parts = item?.system?.damage?.parts
   if (!parts) return
   const psiFire = PsiActor.psiFire(item.actor)
