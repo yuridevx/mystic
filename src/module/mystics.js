@@ -7,8 +7,9 @@ import {getRollData} from './data/rollData.js';
 import {preambleComplete} from './workflow/preambleComplete.mjs';
 import {setupCategories} from './ui/setupCategories.js';
 import {catchValueSet} from './utils.js';
-import {summonComplete} from "./workflow/summonComplete.mjs";
+import {destroySummons, gmDestroySummons, summonComplete, summonConcentration} from "./workflow/summonComplete.mjs";
 import {psiDamage} from "./workflow/psiDamage.js";
+import {singletons} from "./singletons.js";
 
 let isModuleEnabled = true;
 
@@ -27,6 +28,12 @@ Hooks.once('init', async () => {
   catchValueSet(game, 'tokenActionHud', setupCategories);
 });
 
+Hooks.once("socketlib.ready", () => {
+  if (!isModuleEnabled) return;
+  singletons.socket = socketlib.registerModule("mystics");
+  singletons.socket.register("gmDestroySummons", gmDestroySummons);
+});
+
 Hooks.once('setup', async () => {
   if (!isModuleEnabled) return;
   globalThis.libWrapper.register('mystics', 'CONFIG.Item.documentClass.prototype.getRollData', getRollData, 'WRAPPER');
@@ -41,5 +48,9 @@ Hooks.once('setup', async () => {
   Hooks.on('midi-qol.preApplyDynamicEffects', preApplyDynamicEffects);
   Hooks.on('midi-qol.RollComplete', rollComplete);
   Hooks.on("arbron.summonComplete", summonComplete);
+  Hooks.on("arbron.summonComplete", summonConcentration);
   Hooks.on("dnd5e.preRollDamage", psiDamage)
+  Hooks.on("deleteActiveEffect", destroySummons)
+  Hooks.on("preDeleteActiveEffect", () => {
+  })
 });

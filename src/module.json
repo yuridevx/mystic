@@ -9,8 +9,12 @@
     "verified": "10"
   },
   "scripts": [],
-  "esmodules": ["module/mystics.js"],
-  "styles": ["styles/mystics.css"],
+  "esmodules": [
+    "module/mystics.js"
+  ],
+  "styles": [
+    "styles/mystics.css"
+  ],
   "packs": [],
   "languages": [
     {
@@ -24,7 +28,7 @@
     "requires": [],
     "conflicts": []
   },
-  "socket": false,
+  "socket": true,
   "manifest": "This is auto replaced",
   "download": "This is auto replaced",
   "library": false
