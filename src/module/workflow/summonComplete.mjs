@@ -1,5 +1,4 @@
 import {PsiItem} from "../data/PsiItem.mjs";
-import {singletons} from "../singletons.js";
 
 
 export async function summonConcentration(item, tokens) {
@@ -22,15 +21,25 @@ export async function destroySummons(effect, options, userId) {
   const summoned = effect?.flags?.mystic?.summoned
   if (!summoned) return;
 
-  await singletons.socket.executeAsGM(gmDestroySummons, summoner, summoned)
+  if (game.user.isGM) {
+    await gmDestroySummons(summoner, summoned)
+  }
 }
 
 export async function gmDestroySummons(summoner, summoned) {
-  const waitAll = canvas.tokens.placeables
-    .filter(t => summoned.includes(t.id))
-    .map(t => t.document.delete())
+  const combatants = game.combat?.combatants
+  if (combatants) {
+    const ids = combatants
+      .filter(c => summoned.includes(c.tokenId))
+      .map(c => c.id)
+    await game.combat.deleteEmbeddedDocuments("Combatant", ids)
+  }
 
-  await Promise.all(waitAll)
+  const ids = canvas.scene.tokens
+    .filter(t => summoned.includes(t.id))
+    .map(t => t.id)
+
+  await canvas.scene.deleteEmbeddedDocuments("Token", ids)
 }
 
 export function summonComplete(item, tokens) {
