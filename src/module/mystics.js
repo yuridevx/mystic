@@ -10,6 +10,7 @@ import {catchValueSet} from './utils.js';
 import {destroySummons, gmDestroySummons, summonComplete, summonConcentration} from "./workflow/summonComplete.mjs";
 import {psiDamage} from "./workflow/psiDamage.js";
 import {singletons} from "./singletons.js";
+import {combatPanic} from "./workflow/panic.js";
 
 let isModuleEnabled = true;
 
@@ -43,6 +44,8 @@ Hooks.once('setup', async () => {
   Hooks.on('combatRound', combatRound);
   Hooks.on('combatTurn', combatTurn);
   Hooks.on('combatStart', combatStart);
+  Hooks.on('combatRound', combatPanic);
+  Hooks.on('combatTurn', combatPanic);
 
   Hooks.on('midi-qol.preambleComplete', preambleComplete);
   Hooks.on('midi-qol.preApplyDynamicEffects', preApplyDynamicEffects);
