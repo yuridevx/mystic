@@ -7,79 +7,137 @@ export function setupCategories(hud) {
     afterFunction(result, 'buildFurtherActions', buildFurtherActions);
   });
   afterFunction(hud.systemManager, 'doRegisterDefaultFlags', (result, ...args) => {
-    const focusCategory = {
-      id: 'talents',
-      nestId: 'talents',
-      name: 'Talents',
-      subcategories: [
-        {
-          id: 'focus',
-          nestId: 'focus',
-          name: 'Focus',
-        },
-        {
-          id: 'talents_talents',
-          nestId: 'talents_talents',
-          name: 'Talents'
-        },
-      ],
-    };
+    const groups = [
+      {
+        id: "talents",
+        name: "Talents",
+      },
+      {
+        id: "focus",
+        name: "Focus",
+      },
+      {
+        id: 'psi-1',
+        name: 'Psi 1',
+      },
+      {
+        id: 'psi-2',
+        name: 'Psi 2',
+      },
+      {
+        id: 'psi-3',
+        name: 'Psi 3',
+      },
+      {
+        id: 'psi-4',
+        name: 'Psi 4',
+      },
+      {
+        id: 'psi-5',
+        name: 'Psi 5',
+      },
+      {
+        id: 'psi-6',
+        name: 'Psi 6',
+      },
+      {
+        id: 'psi-7',
+        name: 'Psi 7',
+      },
+    ]
 
-    const psionicsCategory = {
-      id: 'disciplines',
-      nestId: 'disciplines',
-      name: 'Disciplines',
-      subcategories: [
-        {
-          id: 'psi-1',
-          nestId: 'discipline_psi-1',
-          name: 'Psi 1',
-        },
-        {
-          id: 'psi-2',
-          nestId: 'discipline_psi-2',
-          name: 'Psi 2',
-        },
-        {
-          id: 'psi-3',
-          nestId: 'discipline_psi-3',
-          name: 'Psi 3',
-        },
-        {
-          id: 'psi-4',
-          nestId: 'discipline_psi-4',
-          name: 'Psi 4',
-        },
-        {
-          id: 'psi-5',
-          nestId: 'discipline_psi-5',
-          name: 'Psi 5',
-        },
-        {
-          id: 'psi-6',
-          nestId: 'discipline_psi-6',
-          name: 'Psi 6',
-        },
-        {
-          id: 'psi-7',
-          nestId: 'discipline_psi-7',
-          name: 'Psi 7',
-        },
-      ],
-    };
+    const layout = [
+      {
+        nestId: "psionics",
+        id: "psionics",
+        name: "Psionics",
+        groups: [
+          {
+            id: "talents",
+            name: "Talents",
+            type: "system",
+            listName: "Talents",
+            nestId: "psionics_talents",
+          },
+          {
+            id: "focus",
+            name: "Focus",
+            type: "system",
+            listName: "Focus",
+            nestId: "psionics_focus",
+          }
+        ]
+      },
+      {
+        nestId: "disciplines",
+        id: "disciplines",
+        name: "Disciplines",
+        groups: [
+          {
+            id: "psi-1",
+            name: "Psi 1",
+            type: "system",
+            listName: "Psi 1",
+            nestId: "disciplines_psi-1",
+          },
+          {
+            id: "psi-2",
+            name: "Psi 2",
+            type: "system",
+            listName: "Psi 2",
+            nestId: "disciplines_psi-2",
+          },
+          {
+            id: "psi-3",
+            name: "Psi 3",
+            type: "system",
+            listName: "Psi 3",
+            nestId: "disciplines_psi-3",
+          },
+          {
+            id: "psi-4",
+            name: "Psi 4",
+            type: "system",
+            listName: "Psi 4",
+            nestId: "disciplines_psi-4",
+          },
+          {
+            id: "psi-5",
+            name: "Psi 5",
+            type: "system",
+            listName: "Psi 5",
+            nestId: "disciplines_psi-5",
+          },
+          {
+            id: "psi-6",
+            name: "Psi 6",
+            type: "system",
+            listName: "Psi 6",
+            nestId: "disciplines_psi-6",
+          },
+          {
+            id: "psi-7",
+            name: "Psi 7",
+            type: "system",
+            listName: "Psi 7",
+            nestId: "disciplines_psi-7",
+          }
+        ]
+      }
+    ]
 
-    const categories = [focusCategory, psionicsCategory];
+    for (const entry of layout) {
+      for (const group of entry.groups) {
+        group.type = 'system';
+        group.listName = group.name;
 
-    for (const category of categories) {
-      for (const subcategory of category.subcategories) {
-        subcategory.type = 'system-derived';
-        const clone = structuredClone(subcategory);
+        const clone = structuredClone(group);
         delete clone.nestId;
-        result.subcategories.push(clone);
+        result.groups.push(clone);
       }
     }
 
-    result.categories.push(...categories);
+    result.layout.push(...layout)
   });
 }
 
@@ -97,7 +155,7 @@ async function buildFurtherActions() {
 
   const map = {
     focus: [],
-    talents_talents: [],
+    talents: [],
     'psi-1': [],
     'psi-2': [],
     'psi-3': [],
@@ -117,7 +175,7 @@ async function buildFurtherActions() {
       continue;
     }
     if (PsiItem.isTalent(item)) {
-      map['talents_talents'].push(item);
+      map['talents'].push(item);
       continue;
     }
 
