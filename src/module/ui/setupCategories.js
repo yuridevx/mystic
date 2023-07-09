@@ -1,11 +1,103 @@
-import {afterFunction} from '../utils.js';
 import {PsiActor} from '../data/PsiActor.mjs';
 import {PsiItem} from '../data/PsiItem.mjs';
+import {afterFunction} from "../utils.js";
+
+
+class MysticActionHandler {
+  constructor(
+    actionHandler
+  ) {
+    this.actionHandler = actionHandler
+  }
+
+  extendActionList() {
+    const actor = this?.actionHandler?.token?.actor;
+    if (!actor) return;
+
+    const isPsi = PsiActor.isPsiActor(actor);
+    if (!isPsi) return;
+
+    const items = this?.actionHandler?.items
+    if (!items || !items?.size) return
+
+    const limit = PsiActor.psiLimit(actor);
+    if (!limit) return;
+
+    const inCombat = !!game?.combat?.started;
+
+    const map = {
+      focus: [],
+      talents: [],
+      'psi-1': [],
+      'psi-2': [],
+      'psi-3': [],
+      'psi-4': [],
+      'psi-5': [],
+      'psi-6': [],
+      'psi-7': [],
+    };
+
+    const points = PsiActor.psiPoints(actor);
+
+    for (const [key, item] of items) {
+      if (inCombat && !PsiItem.isCombatViable(item)) continue;
+
+      if (PsiItem.isFocus(item)) {
+        map['focus'].push(item);
+        continue;
+      }
+      if (PsiItem.isTalent(item)) {
+        map['talents'].push(item);
+        continue;
+      }
+
+      const castMin = PsiItem.castMin(item);
+      if (!castMin) continue;
+      if (points < castMin) continue;
+      if (castMin > limit) continue;
+
+      map[`psi-${castMin}`].push(item);
+    }
+
+    for (const [key, items] of Object.entries(map)) {
+      const actions = items.map(item => {
+        return {
+          "id": item.id,
+          "name": item.name,
+          "encodedValue": `item|${item.id}`,
+          "cssClass": "",
+          "img": item.img,
+          "icon2": null,
+          "info1": {
+            "text": ""
+          },
+          "info2": {
+            "text": ""
+          },
+          "info3": {
+            "text": ""
+          },
+          "listName": `Item: ${item.name}`,
+          "tooltip": ""
+        }
+      })
+
+
+      this.actionHandler.addActions(
+        actions,
+        {
+          id: key,
+        },
+      );
+    }
+  }
+}
 
 export function setupCategories(hud) {
-  afterFunction(hud.systemManager, 'doGetActionHandler', (result, ...args) => {
-    afterFunction(result, 'buildFurtherActions', buildFurtherActions);
+  afterFunction(hud, 'init', function (result, ...args) {
+    this.actionHandler.addFurtherActionHandler(new MysticActionHandler(this.actionHandler))
   });
+
   afterFunction(hud.systemManager, 'doRegisterDefaultFlags', (result, ...args) => {
     const groups = [
       {
@@ -139,62 +231,4 @@ export function setupCategories(hud) {
 
     result.layout.push(...layout)
   });
-}
-
-async function buildFurtherActions() {
-  const actor = this?.token?.actor;
-  if (!actor) return;
-
-  const isPsi = PsiActor.isPsiActor(actor);
-  if (!isPsi) return;
-
-  const limit = PsiActor.psiLimit(actor);
-  if (!limit) return;
-
-  const inCombat = !!game?.combat?.started;
-
-  const map = {
-    focus: [],
-    talents: [],
-    'psi-1': [],
-    'psi-2': [],
-    'psi-3': [],
-    'psi-4': [],
-    'psi-5': [],
-    'psi-6': [],
-    'psi-7': [],
-  };
-
-  const points = PsiActor.psiPoints(actor);
-
-  for (const [key, item] of this.items) {
-    if (inCombat && !PsiItem.isCombatViable(item)) continue;
-
-    if (PsiItem.isFocus(item)) {
-      map['focus'].push(item);
-      continue;
-    }
-    if (PsiItem.isTalent(item)) {
-      map['talents'].push(item);
-      continue;
-    }
-
-    const castMin = PsiItem.castMin(item);
-    if (!castMin) continue;
-    if (points < castMin) continue;
-    if (castMin > limit) continue;
-
-    map[`psi-${castMin}`].push(item);
-  }
-
-  for (const [key, items] of Object.entries(map)) {
-    const mapped = items.map((i) => [i.id, i]);
-    this._buildActions(
-      mapped,
-      {
-        id: key,
-      },
-      'item',
-    );
-  }
 }
